@@ -1,0 +1,3 @@
+greet = name:String -> write 'Hello, {name}'
+
+greet 'Mark'
