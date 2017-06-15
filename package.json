@@ -5,11 +5,12 @@
   "main": "index.js",
   "scripts": {
     "clean": "rm dream-parser.js math-parser.js",
-    "gen-dream": "pegjs -o dream-parser.js dream.pegjs",
     "gen-math": "pegjs -o math-parser.js math.pegjs",
-    "dream": "node dream-parse.js sample.dr",
+    "gen-parser": "pegjs -o dream-parser.js dream.pegjs",
     "math": "node math-parse.js sample.math",
-    "start": "npm-run-all gen-dream dream",
+    "run-parser": "node dream-parse.js sample.dr sample.js",
+    "run-result": "node sample.js",
+    "start": "npm-run-all gen-parser run-parser run-result",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "R. Mark Volkmann <r.mark.volkmann@gmail.com> (http://ociweb.com/mark)",

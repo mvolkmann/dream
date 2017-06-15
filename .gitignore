@@ -1,4 +1,5 @@
 node_modules/
 dream-parser.js
 math-parser.js
+sample.js
 .*.swp

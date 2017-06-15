@@ -1,8 +1,8 @@
 start
-  = (comment / expression)* newline?
+  = (comment / expression / write)* newline?
 
 assignment
-  = name:variableName ws '=' ws value:value {
+  = name:variableName ws '=' ws value:value newline? {
   //console.log('assignment: name = name');
   //console.log('assignment: value = value');
   return {type: 'assignment', name, value};
@@ -43,6 +43,11 @@ variableName
     const name = first + rest.join('');
     //console.log('variableName: name =', name);
     return name;
+  }
+
+write
+  = 'write' ws value:variableName newline? {
+    return {type: 'write', value};
   }
 
 ws = [ \n]+
