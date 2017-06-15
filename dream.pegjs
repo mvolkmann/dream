@@ -1,17 +1,48 @@
 start
-  = additive
+  = (comment / expression)* newline?
 
-additive
-  = left:multiplicative "+" right:additive { return left + right; }
-  / multiplicative
+assignment
+  = name:variableName ws '=' ws value:value {
+  //console.log('assignment: name = name');
+  //console.log('assignment: value = value');
+  return {type: 'assignment', name, value};
+}
 
-multiplicative
-  = left:primary "*" right:multiplicative { return left * right; }
-  / primary
+//call = ...
 
-primary
+comment
+  = singleLineComment
+
+//expression = assignment / call
+expression
+  = assignment
+
+integer
+  = first:[1-9] rest:[0-9]+ {
+  const text = first + rest.join('');
+  return parseInt(text, 10);
+}
+
+newline = '\n'
+
+singleLineComment
+  = '--' rest:[^\n]* newline? {
+  const commentText = rest.join('');
+  //console.log('singleLineComment: commentText =', commentText);
+  return {
+    type: 'comment',
+    value: commentText
+  };
+}
+
+value
   = integer
-  / "(" additive:additive ")" { return additive; }
 
-integer "integer"
-  = digits:[0-9]+ { return parseInt(digits.join(""), 10); }
+variableName
+  = first:[a-z] rest:[a-z0–9]i* {
+    const name = first + rest.join('');
+    //console.log('variableName: name =', name);
+    return name;
+  }
+
+ws = [ \n]+

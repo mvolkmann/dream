@@ -7,13 +7,17 @@
     "clean": "rm dream-parser.js math-parser.js",
     "gen-dream": "pegjs -o dream-parser.js dream.pegjs",
     "gen-math": "pegjs -o math-parser.js math.pegjs",
-    "dream": "node dream-parser.js sample.dr",
+    "dream": "node dream-parse.js sample.dr",
     "math": "node math-parse.js sample.math",
+    "start": "npm-run-all gen-dream dream",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "R. Mark Volkmann <r.mark.volkmann@gmail.com> (http://ociweb.com/mark)",
   "license": "MIT",
   "dependencies": {
     "pegjs": "^0.10.0"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.0.2"
   }
 }
