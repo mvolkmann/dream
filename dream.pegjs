@@ -1,11 +1,11 @@
 start
-  = ((assignment / blankLine / comment / expression) newline?)*
+  = ((assignment / blankLine / comment / write / call) newline?)*
 
 assignment
   // after =, can have a value or a function!
   = name:name ws '=' ws expression:expression {
-    console.log('found assignment to', name);
-    console.log('found assignment with expression =', expression);
+    //console.log('found assignment to', name);
+    //console.log('found assignment with expression =', expression);
     return {kind: 'assignment', name, expression};
   }
 
@@ -18,11 +18,12 @@ blankLine
 boolean
   = 'true' / 'false'
 
+// A call with no arguments must be surrounded by parens.
 call
-  = name:name args:(ws expression)* {
-    console.log('found call to', name);
+  = name:name args:(ws expression)+ {
+    //console.log('found call to', name);
     args = args.map(arr => arr[1]);
-    console.log('with arguments', args);
+    //console.log('found call with arguments', args);
     return {kind: 'call', name:name, args:args};
   }
 
@@ -34,12 +35,12 @@ comment
 // "call" must come after "name" so
 // references to variables aren't treated like calls to functions.
 expression
-  = function / nestedCall / value / write / name / call
+  = function / nestedCall / value / write / name
 
 function
   = params:(parameter ws)* '=>' ws expression:expression {
-    console.log('found function with params =', params);
-    console.log('found function with expression =', expression);
+    //console.log('found function with params =', params);
+    //console.log('found function with expression =', expression);
     return {kind: 'function', params, expression};
   }
 
@@ -52,8 +53,8 @@ integer
 
 name
   = first:[a-z] rest:[a-z0–9]i* {
-    console.log('found name with first =', first);
-    console.log('found name with rest =', rest);
+    //console.log('found name with first =', first);
+    //console.log('found name with rest =', rest);
     const name = first + rest.join('');
     //console.log('found name', name);
     return name;
@@ -61,9 +62,9 @@ name
 
 nestedCall
   = '(' name:name args:(ws expression)* ')' {
-    console.log('found nested call to', name);
+    //console.log('found nested call to', name);
     args = args.map(arr => arr[1]);
-    console.log('found nested call with arguments', args);
+    //console.log('found nested call with arguments', args);
     return {kind: 'call', name:name, args:args};
   }
 
@@ -97,13 +98,13 @@ type
 
 value
   = value:(boolean / integer / string) {
-    console.log('found value', value);
+    //console.log('found value', value);
     return value;
   }
 
 write
   = 'write' ws expression:expression {
-    console.log('found write with expression', expression);
+    //console.log('found write with expression', expression);
     return {kind: 'write', expression};
   }
 

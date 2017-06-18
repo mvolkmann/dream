@@ -3,7 +3,7 @@ const fs = require('fs');
 const {parse} = require('./dream-parser');
 
 function toJs(node, top) {
-  console.log('dream-parse.js toJs: node =', node);
+  //console.log('dream-parse.js toJs: node =', node);
   const type = typeof node;
   if (type !== 'object') {
     console.log('dream-parse.js toJs: non-object node', node);
@@ -64,8 +64,9 @@ fs.readFile(inPath, (err, buf) => {
 
     const ws = fs.createWriteStream(outPath);
     for (const node of nodes) {
+      console.log('node =', JSON.stringify(node));
       const line = toJs(node[0], true);
-      console.log(line);
+      //console.log(line);
       ws.write(line + '\n');
     }
     ws.end();
