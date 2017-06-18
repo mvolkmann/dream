@@ -38,9 +38,10 @@ expression
   = function / nestedCall / value / write / name
 
 function
-  = params:(parameter ws)* '=>' ws expression:expression {
+  = parameters:(parameter ws)* '=>' ws expression:expression {
     //console.log('found function with params =', params);
     //console.log('found function with expression =', expression);
+    const params = parameters.map(p => p[0]);
     return {kind: 'function', params, expression};
   }
 

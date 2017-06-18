@@ -29,7 +29,7 @@ function toJs(node, top) {
       return '//' + value;
 
     case 'function': {
-      const paramNames = params.map(p => p[0].name);
+      const paramNames = params.map(p => p.name);
       const beforeArrow = paramNames.length === 1 ?
         paramNames[0] : `(${paramNames.join(', ')})`;
       const afterArrow = toJs(expression);
