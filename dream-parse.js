@@ -3,6 +3,11 @@ const fs = require('fs');
 const {parse} = require('./dream-parser');
 
 function toJs(node, top) {
+  if (!node) {
+    console.error('no node passed to toJs');
+    return;
+  }
+
   //console.log('dream-parse.js toJs: node =', node);
   const type = typeof node;
   if (type !== 'object') return node;
@@ -49,6 +54,11 @@ function toJs(node, top) {
         `'${value}'`;
     }
 
+    case 'ternary': {
+      const {condition, consequent, alternate} = node;
+      return `${toJs(condition)} ? ${toJs(consequent)} : ${toJs(alternate)}`;
+    }
+
     case 'write': {
       const semi = top ? ';' : '';
       return `console.log(${toJs(expression)})${semi}`;
@@ -61,12 +71,13 @@ function toJs(node, top) {
 
 const [,, inPath, outPath] = process.argv;
 console.log('creating', outPath);
-console.log('parsing', inPath, 'which contains');
+//console.log('parsing', inPath, 'which contains');
+console.log('parsing', inPath);
 
 fs.readFile(inPath, (err, buf) => {
   if (err) throw err;
   const text = buf.toString().trim();
-  console.log(text, '\n');
+  //console.log(text, '\n');
 
   try {
     const nodes = parse(text);
@@ -87,7 +98,7 @@ fs.readFile(inPath, (err, buf) => {
       const {column, line} = start;
       console.error('syntax error on line', line, 'at column', column);
       console.error('found', found);
-      console.error('expected one of', expected);
+      //console.error('expected one of', expected);
     } else {
       console.error('error', e);
     }

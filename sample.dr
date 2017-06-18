@@ -7,3 +7,7 @@ write result
 
 greet = name:String => write 'Hello, {name}. I like braces like these: \{ }!'
 greet 'Mark'
+
+hot = true
+color = hot ? 'red' : 'blue'
+write color

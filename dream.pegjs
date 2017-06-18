@@ -1,3 +1,4 @@
+//TODO: Disallow multiple assignments to the same variable in the same scope.
 start
   = ((assignment / blankLine / comment / write / call) newline?)*
 
@@ -7,17 +8,9 @@ additive
     }
   / multiplicative
 
-multiplicative
-  = left:primary ws '*' ws right:multiplicative {
-      return {kind: 'multiply', left, right};
-    }
-  / primary
-
-primary
-  = integer
-  / name
-  / '(' ws additive:additive ws ')' {
-    return additive;
+argument
+  = space+ ('\\' space* '\n' space*)? expr:expression {
+    return expr;
   }
 
 assignment
@@ -38,10 +31,12 @@ boolean
   = 'true' / 'false'
 
 // A call with no arguments must be surrounded by parens.
+// Each argument must be preceded by at least one space.
+// Each argument can be preceded by a backslash and a newline
+// to continue it on the next line.
 call
-  = name:name args:(ws expression)+ {
+  = name:name args:argument+ {
     //console.log('found call to', name);
-    args = args.map(arr => arr[1]);
     //console.log('found call with arguments', args);
     return {kind: 'call', name:name, args:args};
   }
@@ -49,12 +44,16 @@ call
 comment
   = singleLineComment
 
+//TODO: Handle &&, ||, and ! operators.
+condition
+  = name
+
 // "name" must come after "write" so the
 // "write" keyword isn't treated as a name!
 // "call" must come after "name" so
 // references to variables aren't treated like calls to functions.
 expression
-  = function / nestedCall / value / write / additive
+  = function / nestedCall / ternary / value / write / additive
 
 function
   = parameters:(parameter ws)* '=>' ws expression:expression {
@@ -70,6 +69,12 @@ integer
     const text = first + rest.join('');
     return parseInt(text, 10);
   }
+
+multiplicative
+  = left:primary ws '*' ws right:multiplicative {
+      return {kind: 'multiply', left, right};
+    }
+  / primary
 
 name
   = first:[a-z] rest:[a-z0–9]i* {
@@ -98,6 +103,13 @@ parameter
     return {kind: 'parameter', name, type};
   }
 
+primary
+  = integer
+  / name
+  / '(' ws additive:additive ws ')' {
+    return additive;
+  }
+
 singleLineComment
   = '--' rest:[^\n]* {
     //console.log('found singleLineComment');
@@ -108,9 +120,17 @@ singleLineComment
     };
   }
 
+space
+  = ' '
+
 string
   = "'" chars:[^']* "'" {
     return {kind: 'string', value: chars.join('')};
+  }
+
+ternary
+  = condition:condition ws '?' ws consequent:expression ws ':' ws alternate:expression {
+    return {kind: 'ternary', condition, consequent, alternate};
   }
 
 type
