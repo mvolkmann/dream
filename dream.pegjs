@@ -19,7 +19,7 @@ boolean
   = 'true' / 'false'
 
 call
-  = '(' name:name args:(ws expression)* ')' {
+  = name:name args:(ws expression)* {
     console.log('found call to', name);
     args = args.map(arr => arr[1]);
     console.log('with arguments', args);
@@ -29,8 +29,12 @@ call
 comment
   = singleLineComment
 
+// "name" must come after "write" so the
+// "write" keyword isn't treated as a name!
+// "call" must come after "name" so
+// references to variables aren't treated like calls to functions.
 expression
-  = call / function / value / write
+  = function / nestedCall / value / write / name / call
 
 function
   = params:(parameter ws)* '=>' ws expression:expression {
@@ -48,9 +52,19 @@ integer
 
 name
   = first:[a-z] rest:[a-z0–9]i* {
+    console.log('found name with first =', first);
+    console.log('found name with rest =', rest);
     const name = first + rest.join('');
     //console.log('found name', name);
     return name;
+  }
+
+nestedCall
+  = '(' name:name args:(ws expression)* ')' {
+    console.log('found nested call to', name);
+    args = args.map(arr => arr[1]);
+    console.log('found nested call with arguments', args);
+    return {kind: 'call', name:name, args:args};
   }
 
 newline = '\n' {
@@ -75,14 +89,17 @@ singleLineComment
 
 string
   = "'" chars:[^']* "'" {
-    return chars.join('');
+    return {kind: 'string', value: chars.join('')};
   }
 
 type
   = 'Bool' / 'Float' / 'Int' / 'String'
 
 value
-  = boolean / integer / string
+  = value:(boolean / integer / string) {
+    console.log('found value', value);
+    return value;
+  }
 
 write
   = 'write' ws expression:expression {

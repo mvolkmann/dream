@@ -6,4 +6,4 @@
 --write result
 
 greet = name:String => write 'Hello, {name}'
---(greet 'Mark')
+(greet 'Mark')
