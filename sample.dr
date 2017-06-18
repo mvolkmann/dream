@@ -1,7 +1,8 @@
 foo = 19
 write foo
 
-double = n:Int => n * 2
+double = n:Int =>
+  n * 2
 result = (double 3)
 write result
 
