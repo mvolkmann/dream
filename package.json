@@ -7,6 +7,7 @@
     "clean": "rm dream-parser.js math-parser.js",
     "gen-math": "pegjs -o math-parser.js math.pegjs",
     "gen-parser": "pegjs -o dream-parser.js dream.pegjs",
+    "gen-run": "npm-run-all gen-parser run-parser",
     "math": "node math-parse.js sample.math",
     "run-parser": "node dream-parse.js sample.dr sample.js",
     "run-result": "node sample.js",

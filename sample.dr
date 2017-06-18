@@ -1,4 +1,9 @@
---greet = name:String -> write 'Hello, {name}'
---greet 'Mark'
-foo = 19
-write foo
+--foo = 19
+--write foo
+
+--double = n:Int => 4
+--result = (double 2)
+--write result
+
+greet = name:String => write 'Hello, {name}'
+--(greet 'Mark')
