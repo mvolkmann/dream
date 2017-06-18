@@ -1,6 +1,25 @@
 start
   = ((assignment / blankLine / comment / write / call) newline?)*
 
+additive
+  = left:multiplicative ws '+' ws right:additive {
+      return {kind: 'add', left, right};
+    }
+  / multiplicative
+
+multiplicative
+  = left:primary ws '*' ws right:multiplicative {
+      return {kind: 'multiply', left, right};
+    }
+  / primary
+
+primary
+  = integer
+  / name
+  / '(' ws additive:additive ws ')' {
+    return additive;
+  }
+
 assignment
   // after =, can have a value or a function!
   = name:name ws '=' ws expression:expression {
@@ -35,7 +54,7 @@ comment
 // "call" must come after "name" so
 // references to variables aren't treated like calls to functions.
 expression
-  = function / nestedCall / value / write / name
+  = function / nestedCall / value / write / additive
 
 function
   = parameters:(parameter ws)* '=>' ws expression:expression {

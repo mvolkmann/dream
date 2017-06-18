@@ -1,9 +1,9 @@
 foo = 19
 write foo
 
-double = n:Int => 4
-result = (double 2)
+double = n:Int => n * 2
+result = (double 3)
 write result
 
-greet = name:String => write 'Hello, {name}'
+greet = name:String => write 'Hello, {name}. I like braces like these: \{ }!'
 greet 'Mark'

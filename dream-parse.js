@@ -5,14 +5,14 @@ const {parse} = require('./dream-parser');
 function toJs(node, top) {
   //console.log('dream-parse.js toJs: node =', node);
   const type = typeof node;
-  if (type !== 'object') {
-    console.log('dream-parse.js toJs: non-object node', node);
-    return node;
-  }
+  if (type !== 'object') return node;
 
-  const {args, expression, kind, name, params, value} = node;
+  const {args, expression, kind, left, name, params, right, value} = node;
 
   switch (kind) {
+    case 'add':
+      return `${toJs(left)} + ${toJs(right)}`;
+
     case 'assignment':
       return `const ${name} = ${toJs(expression)};`;
 
@@ -36,8 +36,17 @@ function toJs(node, top) {
       return `${beforeArrow} => ${afterArrow}`;
     }
 
+    case 'multiply':
+      return `${toJs(left)} * ${toJs(right)}`;
+
     case 'string': {
-      return `'${value}'`;
+      // Determine whether the string contains any "{"
+      // that are not immediately preceded by "\"
+      // and are followed by a "}".
+      const interpolate = /[^\\]{.+}/.test(value);
+      return interpolate ?
+        `\`${value.replace(/([^\\]){/g, '$1${')}\`` :
+        `'${value}'`;
     }
 
     case 'write': {
@@ -57,14 +66,14 @@ console.log('parsing', inPath, 'which contains');
 fs.readFile(inPath, (err, buf) => {
   if (err) throw err;
   const text = buf.toString().trim();
-  //console.log(text, '\n');
+  console.log(text, '\n');
 
   try {
     const nodes = parse(text);
 
     const ws = fs.createWriteStream(outPath);
     for (const node of nodes) {
-      console.log('node =', JSON.stringify(node));
+      //console.log('node =', JSON.stringify(node));
       const line = toJs(node[0], true);
       //console.log(line);
       ws.write(line + '\n');
