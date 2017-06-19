@@ -1,12 +1,65 @@
 //TODO: Disallow multiple assignments to the same variable in the same scope.
+
 start
   = ((assignment / blankLine / comment / write / call) newline?)*
+
+/*
+//----------------------------------------------------------------------------
+
+logicalOperatorBinary
+  = ws operator:('and' / 'or') ws {
+    return operator;
+  }
+
+logicalOperatorUnary
+  = ws operator:'not' ws {
+    return operator;
+  }
+
+relationalOperator
+  = ws operator:('<' / '<=' / '==' / '!=' / '>=' / '>') ws {
+    return operator;
+  }
+
+//----------------------------------------------------------------------------
+
+binaryComparison
+  = leftExpr:expression operator:(logicalOperatorBinary / relationalOperator) rightExpr:expression {
+      return {kind: operator, leftExpr, rightExpr};
+    }
+
+unaryComparison
+  = operator:logicalOperatorUnary expression:expression {
+      return {kind: operator, expression};
+    }
+
+// When "name", it must be a boolean variable.
+booleanExpression
+  = name / unaryComparison / binaryComparison
+*/
+
+//----------------------------------------------------------------------------
 
 additive
   = left:multiplicative ws '+' ws right:additive {
       return {kind: 'add', left, right};
     }
   / multiplicative
+
+multiplicative
+  = left:primary ws '*' ws right:multiplicative {
+      return {kind: 'multiply', left, right};
+    }
+  / primary
+
+primary
+  = integer
+  / name
+  / '(' ws additive:additive ws ')' {
+    return additive;
+  }
+
+//----------------------------------------------------------------------------
 
 argument
   = space+ ('\\' space* '\n' space*)? expr:expression {
@@ -16,8 +69,8 @@ argument
 assignment
   // after =, can have a value or a function!
   = name:name ws '=' ws expression:expression {
-    //console.log('found assignment to', name);
-    //console.log('found assignment with expression =', expression);
+    console.log('found assignment to', name);
+    console.log('found assignment with expression =', expression);
     return {kind: 'assignment', name, expression};
   }
 
@@ -44,16 +97,13 @@ call
 comment
   = singleLineComment
 
-//TODO: Handle &&, ||, and ! operators.
-condition
-  = name
-
 // "name" must come after "write" so the
 // "write" keyword isn't treated as a name!
 // "call" must come after "name" so
 // references to variables aren't treated like calls to functions.
 expression
-  = function / nestedCall / ternary / value / write / additive
+  //= function / nestedCall / ternary / value / write / additive
+  = function / nestedCall / value / write / additive
 
 function
   = parameters:(parameter ws)* '=>' ws expression:expression {
@@ -63,21 +113,31 @@ function
     return {kind: 'function', params, expression};
   }
 
-integer
+digits
+  = digits:[0-9]+ {
+    return digits.join('');
+  }
+
+float
+  = whole:integer '.' fraction:digits exponent:('e' integer)? {
+    const exp = exponent ? exponent.join('') : '';
+    const text = `${whole}.${fraction}${exp}`;
+    return text;
+  }
+
+positiveInteger
   = first:[1-9] rest:[0-9]* {
-    //console.log('found integer');
-    const text = first + rest.join('');
+    return first + rest.join('');
+  }
+
+integer
+  = posInt:'0' / sign:'-'? posInt:positiveInteger {
+    const text = `${sign ? sign : ''}${posInt}`;
     return parseInt(text, 10);
   }
 
-multiplicative
-  = left:primary ws '*' ws right:multiplicative {
-      return {kind: 'multiply', left, right};
-    }
-  / primary
-
 name
-  = first:[a-z] rest:[a-z0–9]i* {
+  = first:[a-z] rest:[0-9a-zA-Z]* {
     //console.log('found name with first =', first);
     //console.log('found name with rest =', rest);
     const name = first + rest.join('');
@@ -103,13 +163,6 @@ parameter
     return {kind: 'parameter', name, type};
   }
 
-primary
-  = integer
-  / name
-  / '(' ws additive:additive ws ')' {
-    return additive;
-  }
-
 singleLineComment
   = '--' rest:[^\n]* {
     //console.log('found singleLineComment');
@@ -129,15 +182,16 @@ string
   }
 
 ternary
-  = condition:condition ws '?' ws consequent:expression ws ':' ws alternate:expression {
+  = condition:expression ws '?' ws consequent:expression ws ':' ws alternate:expression {
     return {kind: 'ternary', condition, consequent, alternate};
   }
 
 type
   = 'Bool' / 'Float' / 'Int' / 'String'
 
+// "float" must come before "integer".
 value
-  = value:(boolean / integer / string) {
+  = value:(boolean / float / integer / string) {
     //console.log('found value', value);
     return value;
   }

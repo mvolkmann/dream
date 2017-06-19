@@ -12,3 +12,14 @@ greet 'Mark'
 hot = true
 color = hot ? 'red' : 'blue'
 write color
+
+-- Test integers and floats.
+i1 = 0
+i2 = 19
+i3 = -19
+f1 = 0.0
+f2 = 0.19
+f3 = 12.34
+f4 = -12.34
+f6 = -12.34e5
+f7 = -12.34e-5
