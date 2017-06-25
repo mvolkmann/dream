@@ -11,9 +11,9 @@
     "gen-run": "npm-run-all gen-parser run-parser",
     "lint": "eslint --quiet src",
     "math": "node math-parse.js sample.math",
-    "run-parser": "node dream-parse.js sample.dr sample.js",
+    "run-parser": "flow-node dream-parse.js sample.dr sample.js",
     "run-result": "node sample.js",
-    "start": "npm-run-all gen-parser run-parser run-result",
+    "start": "npm-run-all lint flow gen-parser run-parser run-result",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "R. Mark Volkmann <r.mark.volkmann@gmail.com> (http://ociweb.com/mark)",
@@ -26,6 +26,7 @@
     "eslint": "^4.1.0",
     "eslint-plugin-flowtype": "^2.34.0",
     "flow-bin": "^0.48.0",
+    "flow-remove-types": "^1.2.1",
     "npm-run-all": "^4.0.2"
   }
 }

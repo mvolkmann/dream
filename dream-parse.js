@@ -84,8 +84,8 @@ type WriteType = {
 };
 
 type NodeType =
-  AssignmentType | BinaryMathType | CallType | CommentType | FunctionType |
-  PrimitiveType | TernaryType | WriteType;
+  AssignmentType | BinaryMathType | CallType | CommentType | ConditionType |
+  FunctionType | PrimitiveType | TernaryType | WriteType;
 
 function isPrimitive(value: mixed): boolean {
   const t = typeof value;
