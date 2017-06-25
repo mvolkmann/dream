@@ -22,6 +22,8 @@ relationalOperator
   }
 
 //----------------------------------------------------------------------------
+//TODO: Need a strategy for handling relational and logical operators
+//TODO: so there is no left recursion.
 
 binaryComparison
   = leftExpr:expression operator:(logicalOperatorBinary / relationalOperator) rightExpr:expression {
@@ -42,13 +44,13 @@ booleanExpression
 
 additive
   = left:multiplicative ws '+' ws right:additive {
-      return {kind: 'add', left, right};
+      return {kind: 'binaryMath', operator: '+', left, right};
     }
   / multiplicative
 
 multiplicative
   = left:primary ws '*' ws right:multiplicative {
-      return {kind: 'multiply', left, right};
+      return {kind: 'binaryMath', operator: '*', left, right};
     }
   / primary
 
@@ -81,7 +83,9 @@ blankLine
   }
 
 boolean
-  = 'true' / 'false'
+  = value:('true' / 'false') {
+    return {kind: 'boolean', value};
+  }
 
 // A call with no arguments must be surrounded by parens.
 // Each argument must be preceded by at least one space.
@@ -122,18 +126,18 @@ float
   = whole:integer '.' fraction:digits exponent:('e' integer)? {
     const exp = exponent ? exponent.join('') : '';
     const text = `${whole}.${fraction}${exp}`;
-    return text;
+    return {kind: 'number', value: text};
   }
 
 positiveInteger
   = first:[1-9] rest:[0-9]* {
-    return first + rest.join('');
+    return {kind: 'number', value: first + rest.join('')};
   }
 
 integer
   = posInt:'0' / sign:'-'? posInt:positiveInteger {
     const text = `${sign ? sign : ''}${posInt}`;
-    return parseInt(text, 10);
+    return {kind: 'number', value: parseInt(text, 10)};
   }
 
 name
@@ -142,7 +146,7 @@ name
     //console.log('found name with rest =', rest);
     const name = first + rest.join('');
     //console.log('found name', name);
-    return name;
+    return {kind: 'name', value: name};
   }
 
 nestedCall
@@ -169,7 +173,7 @@ singleLineComment
     const commentText = rest.join('');
     return {
       kind: 'comment',
-      value: commentText
+      text: commentText
     };
   }
 

@@ -5,9 +5,11 @@
   "main": "index.js",
   "scripts": {
     "clean": "rm dream-parser.js math-parser.js",
+    "flow": "flow",
     "gen-math": "pegjs -o math-parser.js math.pegjs",
     "gen-parser": "pegjs -o dream-parser.js dream.pegjs",
     "gen-run": "npm-run-all gen-parser run-parser",
+    "lint": "eslint --quiet src",
     "math": "node math-parse.js sample.math",
     "run-parser": "node dream-parse.js sample.dr sample.js",
     "run-result": "node sample.js",
@@ -20,6 +22,10 @@
     "pegjs": "^0.10.0"
   },
   "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "eslint": "^4.1.0",
+    "eslint-plugin-flowtype": "^2.34.0",
+    "flow-bin": "^0.48.0",
     "npm-run-all": "^4.0.2"
   }
 }
